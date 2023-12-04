@@ -16,14 +16,33 @@ data GameRound = GameRound
   deriving (Show, Eq)
 
 main :: IO ()
-main = interact $ show . solve1 . lines
+main = interact $ show . solve2 . lines
 
 solve1 :: [String] -> Int
 solve1 =
   sum
     . map idx
-    . filter (all (\(GameRound r g b) -> r <= 12 && g <= 13 && b <= 14) . rounds)
+    . filter possibleGame
     . map parseGame
+
+possibleGame :: Game -> Bool
+possibleGame = all (\(GameRound r g b) -> r <= 12 && g <= 13 && b <= 14) . rounds
+
+solve2 :: [String] -> Int
+solve2 =
+  sum
+    . map
+      ( (\(GameRound r g b) -> r * g * b)
+          . fewestCubesEach
+          . rounds
+          . parseGame
+      )
+
+fewestCubesEach :: [GameRound] -> GameRound
+fewestCubesEach =
+  foldr
+    (\(GameRound r g b) (GameRound r' g' b') -> GameRound (max r r') (max g g') (max b b'))
+    (GameRound 0 0 0)
 
 parseGame :: String -> Game
 parseGame str = Game idx rounds
