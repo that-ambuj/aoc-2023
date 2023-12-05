@@ -28,11 +28,13 @@ solve1 =
 possibleGame :: Game -> Bool
 possibleGame = all (\(GameRound r g b) -> r <= 12 && g <= 13 && b <= 14) . rounds
 
+mult3 a b c = a * b * c
+
 solve2 :: [String] -> Int
 solve2 =
   sum
     . map
-      ( (\(GameRound r g b) -> r * g * b)
+      ( (mult3 <$> red <*> green <*> blue)
           . fewestCubesEach
           . rounds
           . parseGame
